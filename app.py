@@ -116,7 +116,7 @@ def decrypt_comments_in_file(file_content: str):
 # decrypt_comments_in_file(file_path)
 
 
-st.title('C# CJK註解及字串 加密/解密工具')
+st.title('C#中日韓文註解及字串加密/解密工具')
 
 passphrase = st.text_input("金鑰（自訂）")
 key = generate_key(passphrase)
