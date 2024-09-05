@@ -28,6 +28,7 @@ def encrypt_comments_in_file(file_content: str):
     encrypted_lines = []
     for line in lines:
         match = re.search('|'.join(['//', '#region ', '#endregion ']), line, re.IGNORECASE)
+        match2 = re.search('\$".*"', line)
         matches1 = re.finditer("'(.*?)'", line) # The ? makes the * non-greedy for single-quoted string matches
         matches2 = re.finditer('"(.*?)"', line) # The ? makes the * non-greedy for double-quoted string matches
         if match:
@@ -37,6 +38,14 @@ def encrypt_comments_in_file(file_content: str):
                 encrypted_lines.append(f'{space_or_code}{match.group(0)}{encrypted_comment}')
             else:
                 encrypted_lines.append(line)
+        elif match2:
+            matches = re.finditer('["}](.*?)[{"]', match2.group(0)[1:])
+            for match in matches:
+                literal = match.group(1)
+                if contains_japanese(literal):
+                    encrypted_literal = encrypt_comment(literal, key)
+                    line = line.replace(literal, encrypted_literal)
+            encrypted_lines.append(line)
         else:
             literals = [match.group(1) for match in matches1]
             for literal in literals:
@@ -72,6 +81,7 @@ def decrypt_comments_in_file(file_content: str):
     decrypted_lines = []
     for line in lines:
         match = re.search('|'.join(['//', '#region ', '#endregion ']), line, re.IGNORECASE)
+        match2 = re.search('\$".*"', line)
         matches1 = re.finditer("'(.*?)'", line) # The ? makes the * non-greedy for single-quoted string matches
         matches2 = re.finditer('"(.*?)"', line) # The ? makes the * non-greedy for double-quoted string matches
         if match:
@@ -81,6 +91,16 @@ def decrypt_comments_in_file(file_content: str):
                 decrypted_lines.append(f'{space_or_code}{match.group(0)}{decrypted_comment}')
             except:
                 decrypted_lines.append(line)
+        elif match2:
+            matches = re.finditer('["}](.*?)[{"]', match2.group(0)[1:])
+            for match in matches:
+                literal = match.group(1)
+                try:
+                    decrypted_literal = decrypt_comment(literal, key)
+                    line = line.replace(literal, decrypted_literal)
+                except:
+                    pass
+            decrypted_lines.append(line)
         else:
             literals = [match.group(1) for match in matches1]
             for literal in literals:
