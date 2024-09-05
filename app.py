@@ -37,21 +37,17 @@ def encrypt_comments_in_file(file_content: str):
                 encrypted_lines.append(f'{space_or_code}{match.group(0)}{encrypted_comment}')
             else:
                 encrypted_lines.append(line)
-        elif matches1:
+        else:
             literals = [match.group(1) for match in matches1]
             for literal in literals:
                 if contains_japanese(literal):
                     encrypted_literal = encrypt_comment(literal, key)
                     line = line.replace(literal, encrypted_literal)
-            encrypted_lines.append(line)
-        elif matches2:
             literals = [match.group(1) for match in matches2]
             for literal in literals:
                 if contains_japanese(literal):
                     encrypted_literal = encrypt_comment(literal, key)
                     line = line.replace(literal, encrypted_literal)
-            encrypted_lines.append(line)
-        else:
             encrypted_lines.append(line)
 
     # with open(file_path, 'w') as file:
@@ -85,7 +81,7 @@ def decrypt_comments_in_file(file_content: str):
                 decrypted_lines.append(f'{space_or_code}{match.group(0)}{decrypted_comment}')
             except:
                 decrypted_lines.append(line)
-        elif matches1:
+        else:
             literals = [match.group(1) for match in matches1]
             for literal in literals:
                 try:
@@ -93,8 +89,6 @@ def decrypt_comments_in_file(file_content: str):
                     line = line.replace(literal, decrypted_literal)
                 except:
                     pass
-            decrypted_lines.append(line)
-        elif matches2:
             literals = [match.group(1) for match in matches2]
             for literal in literals:
                 try:
@@ -102,8 +96,6 @@ def decrypt_comments_in_file(file_content: str):
                     line = line.replace(literal, decrypted_literal)
                 except:
                     pass
-            decrypted_lines.append(line)
-        else:
             decrypted_lines.append(line)
 
     # with open(file_path, 'w') as file:
@@ -116,7 +108,7 @@ def decrypt_comments_in_file(file_content: str):
 # decrypt_comments_in_file(file_path)
 
 
-st.title('C#中日韓註解及字串加密/解密工具')
+st.title('C#中日韓註解字串加密/解密工具')
 
 passphrase = st.text_input("金鑰（自訂）")
 key = generate_key(passphrase)
