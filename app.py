@@ -39,9 +39,9 @@ def encrypt_comments_in_file(file_content: str):
             else:
                 encrypted_lines.append(line)
         elif match2:
-            matches = re.finditer('["}](.*?)[{"]', match2.group(0)[1:])
+            matches = re.finditer('|'.join(['^.*?{', '}.*?{', '}.*?$']), match2.group(0)[1:])
             for match in matches:
-                literal = match.group(1)
+                literal = match.group(0)[1:-1]
                 if contains_japanese(literal):
                     encrypted_literal = encrypt_comment(literal, key)
                     line = line.replace(literal, encrypted_literal)
@@ -92,9 +92,9 @@ def decrypt_comments_in_file(file_content: str):
             except:
                 decrypted_lines.append(line)
         elif match2:
-            matches = re.finditer('["}](.*?)[{"]', match2.group(0)[1:])
+            matches = re.finditer('|'.join(['^.*?{', '}.*?{', '}.*?$']), match2.group(0)[1:])
             for match in matches:
-                literal = match.group(1)
+                literal = match.group(0)[1:-1]
                 try:
                     decrypted_literal = decrypt_comment(literal, key)
                     line = line.replace(literal, decrypted_literal)
